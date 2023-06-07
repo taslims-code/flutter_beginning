@@ -95,7 +95,7 @@ class _MyHomePageState extends State<MyHomePage>
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _tabController.index,
-        selectedItemColor: Colors.red,
+        selectedItemColor: Colors.blue,
         onTap: (index) {
           _tabController.animateTo(index);
         },
