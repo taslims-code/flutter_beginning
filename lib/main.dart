@@ -1,51 +1,141 @@
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(const MyApp(
-    appName: 'Chicken\'s App',
-  ));
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  final String appName;
-
-  const MyApp({super.key, required this.appName});
-
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(title: appName, home: const HomeScreen());
+    return MaterialApp(
+      title: 'Tabbed App',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: MyHomePage(),
+    );
   }
 }
 
-class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
+class MyHomePage extends StatefulWidget {
+  const MyHomePage({Key? key}) : super(key: key);
+
+  @override
+  State<MyHomePage> createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage>
+    with SingleTickerProviderStateMixin {
+  late TabController _tabController;
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 3, vsync: this);
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.purple,
       appBar: AppBar(
-        title: const Text(
-          'Intro to widgets',
-          // textDirection: TextDirection.ltr,
-          style: TextStyle(
-            color: Colors.black,
-            fontWeight: FontWeight.w700,
-            wordSpacing: 0.6,
-            letterSpacing: 0.6,
-            fontSize: 24,
-            // decoration: TextDecoration.lineThrough
-          ),
-        ),
-        backgroundColor: Colors.amber,
-        centerTitle: true,
+        title: const Text('Tabbed App'),
       ),
-      body: const Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
           children: [
-            Text('Hello World'),
+            const DrawerHeader(
+              decoration: BoxDecoration(
+                color: Colors.blue,
+              ),
+              child: Text(
+                'Navigation Drawer',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 24,
+                ),
+              ),
+            ),
+            ListTile(
+              title: const Text('Page 1'),
+              onTap: () {
+                _tabController.animateTo(0);
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              title: const Text('Page 2'),
+              onTap: () {
+                _tabController.animateTo(1);
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              title: const Text('Page 3'),
+              onTap: () {
+                _tabController.animateTo(2);
+                Navigator.pop(context);
+              },
+            ),
           ],
+        ),
+      ),
+      body: TabBarView(
+        controller: _tabController,
+        children: [
+          Center(child: PageWidget(1, Colors.red)),
+          Center(child: PageWidget(2, Colors.green)),
+          Center(child: PageWidget(3, Colors.blue)),
+        ],
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _tabController.index,
+        selectedItemColor: Colors.red,
+        onTap: (index) {
+          _tabController.animateTo(index);
+        },
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Page 1',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.business),
+            label: 'Page 2',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.school),
+            label: 'Page 3',
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class PageWidget extends StatelessWidget {
+  final int pageNumber;
+  final Color color;
+
+  PageWidget(this.pageNumber, this.color);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {},
+        backgroundColor: color,
+        child: Icon(Icons.add),
+      ),
+      body: Center(
+        child: Text(
+          'Page $pageNumber',
+          style: TextStyle(fontSize: 24),
         ),
       ),
     );
